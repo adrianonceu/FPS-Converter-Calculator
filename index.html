@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>FPS Conversion Calculator</title>
+
+<style>
+body{
+    font-family:Arial,Helvetica,sans-serif;
+    background:#1e1e1e;
+    color:white;
+    margin:40px;
+}
+
+.container{
+    max-width:700px;
+    margin:auto;
+    background:#2d2d2d;
+    padding:25px;
+    border-radius:12px;
+}
+
+h1{
+    text-align:center;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:15px;
+}
+
+label{
+    display:block;
+    margin-bottom:5px;
+}
+
+input{
+    width:100%;
+    padding:10px;
+    border:none;
+    border-radius:6px;
+    font-size:16px;
+}
+
+button{
+    margin-top:20px;
+    width:100%;
+    padding:14px;
+    font-size:18px;
+    cursor:pointer;
+    border:none;
+    border-radius:8px;
+    background:#00aaff;
+    color:white;
+}
+
+.result{
+    margin-top:25px;
+    background:#444;
+    padding:20px;
+    border-radius:8px;
+}
+
+.result p{
+    font-size:18px;
+}
+</style>
+
+</head>
+<body>
+
+<div class="container">
+
+<h1>FPS Conversion Calculator</h1>
+
+<div class="grid">
+
+<div>
+<label>Original FPS</label>
+<input id="sourceFPS" type="number" step="0.001" value="23.976">
+</div>
+
+<div>
+<label>Target FPS</label>
+<input id="targetFPS" type="number" step="0.001" value="25">
+</div>
+
+<div>
+<label>Hours</label>
+<input id="hh" type="number" value="0">
+</div>
+
+<div>
+<label>Minutes</label>
+<input id="mm" type="number" value="1">
+</div>
+
+<div>
+<label>Seconds</label>
+<input id="ss" type="number" value="0">
+</div>
+
+<div>
+<label>Frames</label>
+<input id="ff" type="number" value="0">
+</div>
+
+</div>
+
+<button onclick="convert()">Convert</button>
+
+<div class="result" id="output">
+
+<p><b>Speed Change:</b> -</p>
+<p><b>Playback Speed:</b> -</p>
+<p><b>Original Duration:</b> -</p>
+<p><b>New Duration:</b> -</p>
+<p><b>New Timecode:</b> -</p>
+
+</div>
+
+</div>
+
+<script>
+
+function pad(n){
+    return String(n).padStart(2,'0');
+}
+
+function convert(){
+
+let sFPS=parseFloat(document.getElementById("sourceFPS").value);
+let tFPS=parseFloat(document.getElementById("targetFPS").value);
+
+let hh=parseInt(document.getElementById("hh").value)||0;
+let mm=parseInt(document.getElementById("mm").value)||0;
+let ss=parseInt(document.getElementById("ss").value)||0;
+let ff=parseInt(document.getElementById("ff").value)||0;
+
+let totalSeconds=hh*3600+mm*60+ss+(ff/sFPS);
+
+let multiplier=tFPS/sFPS;
+let speedPercent=multiplier*100;
+
+let newSeconds=totalSeconds/multiplier;
+
+let nh=Math.floor(newSeconds/3600);
+newSeconds-=nh*3600;
+
+let nm=Math.floor(newSeconds/60);
+newSeconds-=nm*60;
+
+let ns=Math.floor(newSeconds);
+let nf=Math.round((newSeconds-ns)*tFPS);
+
+if(nf>=tFPS){
+    nf=0;
+    ns++;
+}
+
+document.getElementById("output").innerHTML=
+`
+<p><b>Speed Change:</b> ${speedPercent.toFixed(3)}%</p>
+
+<p><b>Playback Speed:</b> ${multiplier.toFixed(6)}x</p>
+
+<p><b>Original Duration:</b> ${pad(hh)}:${pad(mm)}:${pad(ss)}:${pad(ff)}</p>
+
+<p><b>New Duration:</b> ${(totalSeconds/multiplier).toFixed(3)} seconds</p>
+
+<p><b>New Timecode:</b> ${pad(nh)}:${pad(nm)}:${pad(ns)}:${pad(nf)}</p>
+
+`;
+
+}
+
+</script>
+
+</body>
+</html>
